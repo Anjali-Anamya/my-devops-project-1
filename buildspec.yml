@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 910490057036.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t my-tf-repo .
+      - docker tag my-tf-repo:latest 910490057036.dkr.ecr.us-east-1.amazonaws.com/my-tf-repo:latest
+  post_build:
+    commands:
+      - echo Pushing the Docker image to ECR...
+      - docker push 910490057036.dkr.ecr.us-east-1.amazonaws.com/my-tf-repo:latest
+      - echo Writing imagedefinitions.json...
+      - printf '[{"name":"my-app","imageUri":"910490057036.dkr.ecr.us-east-1.amazonaws.com/my-tf-repo:latest"}]' > imagedefinitions.json
+
+artifacts:
+  files: imagedefinitions.json
