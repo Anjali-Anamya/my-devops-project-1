@@ -5,12 +5,12 @@ resource "aws_kms_key" "s3_key" {
 }
 
 resource "aws_s3_bucket" "artifact_store" {
-  bucket = "artifact-store-${var.project}-${var.environment}"
+  bucket        = "artifact-store-devops-project-dev"
   force_destroy = true
 
   tags = {
     Name        = "Artifact Store Bucket"
-    Environment = var.environment
+    Environment = "dev"
   }
 }
 
@@ -45,12 +45,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_store_en
 # ---------- LOGGING BUCKET ----------
 
 resource "aws_s3_bucket" "artifact_store_logs" {
-  bucket = "artifact-store-logs-${var.project}-${var.environment}"
+  bucket        = "artifact-store-logs-devops-project-dev"
   force_destroy = true
 
   tags = {
     Name        = "Artifact Store Logs Bucket"
-    Environment = var.environment
+    Environment = "dev"
   }
 }
 
@@ -83,8 +83,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_store_lo
 }
 
 resource "aws_s3_bucket_logging" "artifact_store_logs_logging" {
-  bucket = aws_s3_bucket.artifact_store_logs.id
-
-  target_bucket = aws_s3_bucket.artifact_store_logs.id
+  bucket        = aws_s3_bucket_logs.id
+  target_bucket = aws_s3_bucket_logs.id
   target_prefix = "logs/"
 }
