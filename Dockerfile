@@ -1,4 +1,4 @@
-# Use official Nginx image as base
+# Use official Nginx image from Amazon Public ECR to avoid Docker Hub rate limits
 FROM public.ecr.aws/nginx/nginx:alpine
 
 # Copy the static HTML file into the container
