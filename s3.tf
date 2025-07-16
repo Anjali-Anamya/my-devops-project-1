@@ -1,9 +1,11 @@
+# ---------- KMS KEY ----------
 resource "aws_kms_key" "s3_key" {
   description             = "KMS key for S3 bucket encryption"
   deletion_window_in_days = 10
   enable_key_rotation     = true
 }
 
+# ---------- ARTIFACT STORE BUCKET ----------
 resource "aws_s3_bucket" "artifact_store" {
   bucket        = "artifact-store-devops-project-dev"
   force_destroy = true
@@ -43,7 +45,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_store_en
 }
 
 # ---------- LOGGING BUCKET ----------
-
 resource "aws_s3_bucket" "artifact_store_logs" {
   bucket        = "artifact-store-logs-devops-project-dev"
   force_destroy = true
@@ -82,8 +83,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_store_lo
   }
 }
 
-resource "aws_s3_bucket_logging" "artifact_store_logs_logging" {
-  bucket        = aws_s3_bucket.artifact_store_logs.id
+# ✅ MAIN BUCKET LOGGING INTO LOG BUCKET
+resource "aws_s3_bucket_logging" "artifact_store_logging" {
+  bucket        = aws_s3_bucket.artifact_store.id
   target_bucket = aws_s3_bucket.artifact_store_logs.id
   target_prefix = "logs/"
 }
