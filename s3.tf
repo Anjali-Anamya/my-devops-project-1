@@ -44,6 +44,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_store_en
   }
 }
 
+resource "aws_s3_bucket_logging" "artifact_store_logging" {
+  bucket        = aws_s3_bucket.artifact_store.id
+  target_bucket = aws_s3_bucket.artifact_store_logs.id
+  target_prefix = "logs/"
+}
+
 # ---------- LOGGING BUCKET ----------
 resource "aws_s3_bucket" "artifact_store_logs" {
   bucket        = "artifact-store-logs-devops-project-dev"
@@ -83,8 +89,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_store_lo
   }
 }
 
-resource "aws_s3_bucket_logging" "artifact_store_logging" {
-  bucket        = aws_s3_bucket.artifact_store.id
-  target_bucket = aws_s3_bucket.artifact_store_logs.id
-  target_prefix = "logs/"
-}
+# Optional: Self-logging for the logging bucket
+# resource "aws_s3_bucket_logging" "artifact_store_logs_logging" {
+#   bucket        = aws_s3_bucket.artifact_store_logs.id
+#   target_bucket = aws_s3_bucket.artifact_store_logs.id
+#   target_prefix = "internal-logs/"
+# }
