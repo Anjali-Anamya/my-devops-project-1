@@ -48,7 +48,13 @@ resource "aws_s3_bucket_logging" "artifact_store_logging" {
   bucket        = aws_s3_bucket.artifact_store.id
   target_bucket = aws_s3_bucket.artifact_store_logs.id
   target_prefix = "logs/"
+
+  depends_on = [
+    aws_s3_bucket.artifact_store,
+    aws_s3_bucket.artifact_store_logs
+  ]
 }
+
 
 # ---------- LOGGING BUCKET ----------
 resource "aws_s3_bucket" "artifact_store_logs" {
