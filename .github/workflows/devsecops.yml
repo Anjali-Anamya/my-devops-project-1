@@ -1,0 +1,21 @@
+name: DevSecOps CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tfsec:
+    name: Terraform Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
+      - name: Run tfsec
+        run: tfsec .
