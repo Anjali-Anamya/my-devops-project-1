@@ -19,9 +19,9 @@ resource "aws_codepipeline" "app_pipeline" {
       output_artifacts = ["source_output"]
 
       configuration = {
-        ConnectionArn = aws_codestarconnections_connection.github.arn
+        ConnectionArn    = aws_codestarconnections_connection.github.arn
         FullRepositoryId = "Anjali-Anamya/my-devops-project-1"
-        BranchName = "main"
+        BranchName       = "main"
       }
     }
   }
@@ -48,12 +48,12 @@ resource "aws_codepipeline" "app_pipeline" {
     name = "Deploy"
 
     action {
-      name             = "Deploy"
-      category         = "Deploy"
-      owner            = "AWS"
-      provider         = "ECS"
-      input_artifacts  = ["build_output"]
-      version          = "1"
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ECS"
+      input_artifacts = ["build_output"]
+      version         = "1"
 
       configuration = {
         ClusterName = aws_ecs_cluster.app_cluster.name

@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "artifact_store" {
-  bucket         = "anjali-artifact-store-bucket"
-  force_destroy  = true
+  bucket        = "anjali-artifact-store-bucket"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_public_access_block" "artifact_store_block" {

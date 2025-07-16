@@ -1,0 +1,16 @@
+# Terraform state files
+terraform.tfstate
+terraform.tfstate.backup
+
+# Terraform working directory
+.terraform/
+
+# Local environment variables or secret files (optional but recommended)
+*.tfvars
+*.env
+
+# Ignore log or temp files
+*.log
+
+# Backup files
+*~
