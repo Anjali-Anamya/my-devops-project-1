@@ -1,5 +1,15 @@
 resource "aws_ecs_cluster" "app_cluster" {
   name = "anjali-fargate-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+
+  tags = {
+    Name        = "Anjali ECS Cluster"
+    Environment = "dev"
+  }
 }
 
 resource "aws_ecs_task_definition" "app_task" {
@@ -38,4 +48,11 @@ resource "aws_ecs_service" "app_service" {
     security_groups  = ["sg-057f1cfabf1a96b04"]
     assign_public_ip = true
   }
+
+  tags = {
+    Name        = "Anjali ECS Service"
+    Environment = "dev"
+  }
+
+  depends_on = [aws_ecs_cluster.app_cluster]
 }
