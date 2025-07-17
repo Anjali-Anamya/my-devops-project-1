@@ -1,56 +1,20 @@
-name: DevSecOps CI/CD Pipeline
+apply-sealed-secrets:
+  name: Apply Sealed Secrets
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-on:
-  push:
-    branches:
-      - main
+    - name: Install kubeseal
+      run: |
+        wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.23.0/kubeseal-linux-amd64 -O kubeseal
+        chmod +x kubeseal
+        sudo mv kubeseal /usr/local/bin/
 
-jobs:
-  ci-cd:
-    runs-on: ubuntu-latest
+    - name: Setup kubeconfig file
+      run: echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.6.6
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Run tfsec - Terraform Security Scanner
-        uses: aquasecurity/tfsec-action@v1.0.0
-
-      - name: Build Docker Image
-        run: docker build -t anjali-app:latest .
-
-      - name: Run Trivy - Docker Image Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'anjali-app:latest'
-          format: 'table'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-
-      - name: Set up Kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
-          chmod 600 ~/.kube/config
-      - name: Apply Sealed Secret to Cluster
-        run: kubectl apply --validate=false -f sealedsecret.yaml
-
+    - name: Apply Sealed Secret
+      env:
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig.yaml
+      run: kubectl apply -f sealed-secret.yaml
