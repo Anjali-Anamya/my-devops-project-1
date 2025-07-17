@@ -56,6 +56,6 @@ jobs:
 
       - name: Apply Sealed Secret
         run: |
-          kubectl apply -f sealed-secret.yaml
+          kubectl apply -f sealed-secret.yaml --validate=false
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
