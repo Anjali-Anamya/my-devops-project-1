@@ -1,26 +1,64 @@
-  apply-sealed-secrets:
-    name: Apply Sealed Secrets
+name: DevSecOps CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tfsec:
+    name: Terraform Security Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install kubeseal
+      - name: Install tfsec
         run: |
-          wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.23.0/kubeseal-0.23.0-linux-amd64.tar.gz
-          tar -xzf kubeseal-0.23.0-linux-amd64.tar.gz
-          chmod +x kubeseal
-          sudo mv kubeseal /usr/local/bin/
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
 
-      - name: Configure kubeconfig
-        run: |
-          echo "${KUBECONFIG}" > kubeconfig.yaml
-          export KUBECONFIG=$PWD/kubeconfig.yaml
-          kubectl get nodes
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+      - name: Run tfsec
+        run: tfsec .
 
-      - name: Apply Sealed Secret
+  trivy:
+    name: Docker Image Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Trivy
         run: |
-          export KUBECONFIG=$PWD/kubeconfig.yaml
-          kubectl apply -f sealed-secret.yaml --validate=false
+          sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install trivy -y
+
+      - name: Build Docker Image
+        run: docker build -t my-app .
+
+      - name: Scan Docker Image
+        run: trivy image my-app
+
+  apply-sealed-secrets:
+  name: Apply Sealed Secrets
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install kubeseal
+      run: |
+        wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.23.0/kubeseal-0.23.0-linux-amd64.tar.gz
+        tar -xzf kubeseal-0.23.0-linux-amd64.tar.gz
+        chmod +x kubeseal
+        sudo mv kubeseal /usr/local/bin/
+
+    - name: Set up KUBECONFIG
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+    - name: Apply Sealed Secret
+      run: |
+        kubectl apply -f sealed-secret.yaml --validate=false
