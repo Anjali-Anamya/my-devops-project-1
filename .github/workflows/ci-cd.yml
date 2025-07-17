@@ -51,9 +51,6 @@ jobs:
           mkdir -p ~/.kube
           echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
           chmod 600 ~/.kube/config
-        
-
-
       - name: Apply Sealed Secret to Cluster
-        run: |
-          kubectl apply -f sealedsecret.yaml
+        run: kubectl apply --validate=false -f sealedsecret.yaml
+
