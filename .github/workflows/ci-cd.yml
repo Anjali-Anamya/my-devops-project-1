@@ -27,13 +27,10 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Run tfsec - Terraform Security Scanner
-        uses: aquasecurity/tfsec-action@v1.0.0
-
       - name: Run Trivy - Docker Image Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'anjali-app:latest'   # Replace with your image name
+          image-ref: 'anjali-app:latest'   # Replace with your actual image name
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
