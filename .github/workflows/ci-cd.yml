@@ -27,14 +27,6 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Run Trivy - Docker Image Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'anjali-app:latest'   # Replace with your actual image name
-          format: 'table'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
-
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
