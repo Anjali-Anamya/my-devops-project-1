@@ -30,10 +30,13 @@ jobs:
       - name: Run tfsec - Terraform Security Scanner
         uses: aquasecurity/tfsec-action@v1.0.0
 
+      - name: Build Docker Image
+        run: docker build -t anjali-app:latest .
+
       - name: Run Trivy - Docker Image Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'anjali-app:latest'   # Replace with your image name
+          image-ref: 'anjali-app:latest'
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
@@ -51,5 +54,3 @@ jobs:
       - name: Apply Sealed Secret to Cluster
         run: |
           kubectl apply -f sealedsecret.yaml
-
-      
