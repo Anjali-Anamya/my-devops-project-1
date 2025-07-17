@@ -29,3 +29,29 @@ jobs:
 
       - name: Run tfsec - Terraform Security Scanner
         uses: aquasecurity/tfsec-action@v1.0.0
+
+      - name: Run Trivy - Docker Image Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'anjali-app:latest'   # Replace with your image name
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Set up Kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
+
+      - name: Apply Sealed Secret to Cluster
+        run: |
+          kubectl apply -f sealedsecret.yaml
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s-deployment.yaml
