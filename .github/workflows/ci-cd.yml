@@ -39,8 +39,6 @@ jobs:
 
       - name: Apply Sealed Secret to Cluster
         run: |
-          kubectl apply -f sealedsecret.yaml
+          kubectl apply -f secret.yaml
 
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f k8s-deployment.yaml
+      
