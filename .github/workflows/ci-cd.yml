@@ -41,24 +41,24 @@ jobs:
         run: trivy image my-app
 
   apply-sealed-secrets:
-  name: Apply Sealed Secrets
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    name: Apply Sealed Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install kubeseal
-      run: |
-        wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.23.0/kubeseal-0.23.0-linux-amd64.tar.gz
-        tar -xzf kubeseal-0.23.0-linux-amd64.tar.gz
-        chmod +x kubeseal
-        sudo mv kubeseal /usr/local/bin/
+      - name: Install kubeseal
+        run: |
+          wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.23.0/kubeseal-0.23.0-linux-amd64.tar.gz
+          tar -xzf kubeseal-0.23.0-linux-amd64.tar.gz
+          chmod +x kubeseal
+          sudo mv kubeseal /usr/local/bin/
 
-    - name: Set up KUBECONFIG
-      run: |
-        mkdir -p ~/.kube
-        echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      - name: Set up KUBECONFIG
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
-    - name: Apply Sealed Secret
-      run: |
-        kubectl apply -f sealed-secret.yaml --validate=false
+      - name: Apply Sealed Secret
+        run: |
+          kubectl apply -f sealed-secret.yaml --validate=false
