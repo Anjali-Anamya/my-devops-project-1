@@ -39,6 +39,6 @@ jobs:
 
       - name: Apply Sealed Secret to Cluster
         run: |
-          kubectl apply -f secret.yaml
+          kubectl apply -f sealedsecret.yaml
 
       
