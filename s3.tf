@@ -10,6 +10,11 @@ resource "aws_s3_bucket" "artifact_store" {
   bucket        = "artifact-store-devops-project-dev"
   force_destroy = true
 
+  logging {
+    target_bucket = aws_s3_bucket.artifact_store_logs.id
+    target_prefix = "logs/"
+  }
+
   tags = {
     Name        = "Artifact Store Bucket"
     Environment = "dev"
@@ -44,21 +49,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_store_en
   }
 }
 
-resource "aws_s3_bucket_logging" "artifact_store_logging" {
-  bucket        = aws_s3_bucket.artifact_store.id
-  target_bucket = aws_s3_bucket.artifact_store_logs.id
-  target_prefix = "logs/"
-
-  depends_on = [
-    aws_s3_bucket.artifact_store,
-    aws_s3_bucket.artifact_store_logs
-  ]
-}
-
 # ---------- LOGGING BUCKET ----------
 resource "aws_s3_bucket" "artifact_store_logs" {
   bucket        = "artifact-store-logs-devops-project-dev"
   force_destroy = true
+
+  logging {
+    target_bucket = aws_s3_bucket.artifact_store_logs.id
+    target_prefix = "internal-logs/"
+  }
 
   tags = {
     Name        = "Artifact Store Logs Bucket"
@@ -92,10 +91,4 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_store_lo
       kms_master_key_id = aws_kms_key.s3_key.arn
     }
   }
-}
-
-resource "aws_s3_bucket_logging" "artifact_store_logs_logging" {
-  bucket        = aws_s3_bucket.artifact_store_logs.id
-  target_bucket = aws_s3_bucket.artifact_store_logs.id
-  target_prefix = "internal-logs/"
 }
